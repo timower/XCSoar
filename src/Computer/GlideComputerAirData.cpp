@@ -86,6 +86,7 @@ GlideComputerAirData::ProcessBasic(const MoreData &basic,
   ProcessSun(basic, calculated, settings);
 
   NettoVario(basic, calculated.flight, calculated, settings);
+  BestFlap(basic, calculated, settings);
 }
 
 void
@@ -440,4 +441,19 @@ GlideComputerAirData::NextLegEqThermal([[maybe_unused]] const NMEAInfo &basic,
 
   calculated.next_leg_eq_thermal =
       settings.polar.glide_polar_task.GetNextLegEqThermal(wind_comp, next_comp);
+}
+
+void
+GlideComputerAirData::BestFlap(const NMEAInfo& basic, DerivedInfo& calculated,
+                               const ComputerSettings &settings)
+{
+  auto g_load = basic.acceleration.available
+    ? basic.acceleration.g_load
+    : 1;
+
+  calculated.best_flap =
+    calculated.flight.flying && basic.airspeed_available &&
+    settings.polar.glide_polar_task.IsValid()
+    ? settings.polar.glide_polar_task.GetFlapIndex(basic.indicated_airspeed, sqrt(g_load))
+    : 0;
 }

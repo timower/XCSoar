@@ -1107,6 +1107,13 @@ static constexpr MetaData meta_data[] = {
     UpdateInfoBoxHeartRate,
   },
 
+  {
+    N_("Best Flaps"),
+    N_("Flap"),
+    N_("Current best flap setting."),
+    UpdateInfoBoxFlaps,
+  },
+
 };
 
 static_assert(ARRAY_SIZE(meta_data) == NUM_TYPES,

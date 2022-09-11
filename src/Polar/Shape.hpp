@@ -25,6 +25,8 @@ Copyright_License {
 
 #include <array>
 
+#include "Polar/Flaps.hpp"
+
 struct PolarCoefficients;
 
 struct PolarPoint {
@@ -42,6 +44,8 @@ struct PolarPoint {
 struct PolarShape {
   std::array<PolarPoint, 3> points;
   double reference_mass; /**< Reference Mass (kg) */
+
+  Flaps flaps;
 
   const PolarPoint &operator[](unsigned i) const noexcept {
     return points[i];

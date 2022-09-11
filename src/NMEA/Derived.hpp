@@ -136,7 +136,7 @@ static_assert(std::is_trivial<AirspaceWarningsInfo>::value, "type is not trivial
  * A struct that holds all the calculated values derived from the data in the
  * NMEA_INFO struct
  */
-struct DerivedInfo: 
+struct DerivedInfo:
   public VarioInfo,
   public ClimbInfo,
   public CirclingInfo,
@@ -256,6 +256,8 @@ struct DerivedInfo:
    * treated as invalid.
    */
   double next_leg_eq_thermal;
+
+  unsigned best_flap;
 
   /**
    * @todo Reset to cleared state

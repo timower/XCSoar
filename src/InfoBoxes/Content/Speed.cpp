@@ -122,3 +122,20 @@ UpdateInfoBoxSpeedDolphin(InfoBoxData &data) noexcept
     data.SetComment(_("DOLPHIN"));
 
 }
+
+void
+UpdateInfoBoxFlaps(InfoBoxData& data) noexcept
+{
+  const auto best_flap = CommonInterface::Calculated().best_flap;
+  const auto& polar = CommonInterface::GetComputerSettings().plane.polar_shape;
+
+  data.FormatComment("%d", best_flap);
+
+  if (polar.flaps.empty() || best_flap >= polar.flaps.size()) {
+    data.SetInvalid();
+    return;
+  }
+
+  const auto& flapSetting = polar.flaps[best_flap];
+  data.SetValue(flapSetting.name);
+}

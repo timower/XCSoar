@@ -19,10 +19,11 @@
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 }
  */
- 
+
 #pragma once
 
 #include "PolarCoefficients.hpp"
+#include "Polar/Flaps.hpp"
 
 #include <type_traits>
 #include <cassert>
@@ -36,17 +37,17 @@ struct SpeedVector;
 
 /**
  * Class implementing basic glide polar performance model
- * 
+ *
  * Implements aircraft-specific glide performance, including
  * bugs/ballast, MacCready setting and cruise efficiency.
  *
- * Cruise efficiency is the ratio of actual cruise speed to 
+ * Cruise efficiency is the ratio of actual cruise speed to
  * target to the classical MacCready speed.
  * Cruise efficiency is stored in this class for convenience,
  * it is used in MacCready class.
- * 
+ *
  * The MacCready class uses this GlidePolar data to calculate
- * specific GlideSolutions. 
+ * specific GlideSolutions.
  *
  * This uses a parabolic glide polar:
  * \f[ w = a.V^2+b.V+c \f]
@@ -102,6 +103,8 @@ class GlidePolar
   double crew_mass;
   /** Reference wing area, m^2 */
   double wing_area;
+
+  FlapSpeeds flap_speeds;
 
   friend class GlidePolarTest;
 
@@ -284,7 +287,7 @@ public:
   void SetBugs(const double clean);
 
   /**
-   * Retrieve bugs 
+   * Retrieve bugs
    * @return Cleanliness of glider (0-1]
    */
   [[gnu::pure]]
@@ -306,7 +309,7 @@ public:
   void SetBallastLitres(const double litres);
 
   /**
-   * Retrieve ballast 
+   * Retrieve ballast
    * @return Proportion of possible ballast [0-1]
    */
   [[gnu::pure]]
@@ -535,33 +538,33 @@ public:
   double GetDryMass() const {
     return empty_mass + crew_mass;
   }
-  
+
   /** Returns the empty mass in kg */
   double GetEmptyMass() const {
     return empty_mass;
   }
-  
+
   /** Sets the empty mass in kg */
   void SetEmptyMass(double _empty_mass, bool update = true) {
     empty_mass = _empty_mass;
-    
+
     if (update)
       Update();
   }
-  
+
   /** Sets the crew mass in kg */
   void SetCrewMass(double _crew_mass, bool update = true) {
     crew_mass = _crew_mass;
-    
+
     if (update)
       Update();
   }
-  
+
   /** Returns the crew mass in kg */
   double GetCrewMass() const {
     return crew_mass;
   }
-  
+
   /** Returns the ballast ratio */
   double GetBallastRatio() const {
     return ballast_ratio;
@@ -595,6 +598,12 @@ public:
 
   /** Calculate average speed in still air */
   double GetAverageSpeed() const;
+
+  void SetFlapSpeeds(FlapSpeeds speeds) {
+    flap_speeds = speeds;
+  }
+
+  unsigned GetFlapIndex(double V, double n = 1.0) const;
 
 private:
   /** Update sink rate at max. cruise speed */

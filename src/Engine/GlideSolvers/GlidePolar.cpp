@@ -230,7 +230,7 @@ public:
 };
 #endif
 
-void 
+void
 GlidePolar::UpdateSMin()
 {
 #if 0
@@ -485,4 +485,10 @@ double GlidePolar::GetAverageSpeed() const
     return v/(1+rho);
   } else
     return 0;
+}
+
+unsigned GlidePolar::GetFlapIndex(double V, double n) const
+{
+  const auto loading_factor = sqrt(GetTotalMass() / reference_mass) * n;
+  return flap_speeds.GetSetting(V / loading_factor);
 }

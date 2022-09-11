@@ -47,6 +47,7 @@ class PlanePolarWidget final
     INVALID,
     SHAPE,
     REFERENCE_MASS,
+    FLAPS
   };
 
   Plane plane;
@@ -82,6 +83,8 @@ private:
 
   void ListClicked();
   void ImportClicked();
+  void FlapsCLicked();
+
 
   /* virtual methods from Widget */
   void Prepare(ContainerWindow &parent, const PixelRect &rc) noexcept override;
@@ -135,6 +138,8 @@ PlanePolarWidget::Prepare([[maybe_unused]] ContainerWindow &parent,
            _T("%.0f %s"), _T("%.0f"),
            0, 1000, 5, false,
            UnitGroup::MASS, plane.polar_shape.reference_mass);
+
+  AddButton(_("Flaps"), [this]{ FlapsCLicked(); });
 }
 
 void
@@ -229,6 +234,12 @@ PlanePolarWidget::ImportClicked()
   plane.polar_name = path.GetBase().c_str();
 
   Update();
+}
+
+inline void
+PlanePolarWidget::FlapsCLicked()
+{
+  dlgPlaneFlapsShowModal(plane);
 }
 
 void

@@ -54,8 +54,6 @@ ParsePolarShape(PolarShape &shape, const char *s)
     return false;
 
   auto w3 = ParseDouble(p + 1, &p);
-  if (*p != '\0')
-    return false;
 
   shape[0].v = v1;
   shape[0].w = w1;
@@ -63,6 +61,49 @@ ParsePolarShape(PolarShape &shape, const char *s)
   shape[1].w = w2;
   shape[2].v = v3;
   shape[2].w = w3;
+
+  shape.flaps.clear();
+
+  if (*p == '\0') {
+    return true;
+  }
+
+  if (*p != _T(','))
+    return false;
+
+  auto num_flaps = ParseUnsigned(p+1, &p);
+  if (num_flaps == 0) {
+    if (*p != '\0')
+      return false;
+    return true;
+  }
+
+  if (num_flaps > shape.flaps.capacity())
+    return false;
+
+  for (unsigned i = 0; i < num_flaps; i++) {
+    if (*p != _T(','))
+      return false;
+
+    p++;
+    const char* name = p;
+    unsigned name_size = 0;
+    while (name[name_size] != _T(',')) {
+      name_size++;
+    }
+
+    FlapSetting setting;
+    if (name_size > setting.name.capacity())
+      return false;
+
+    setting.name = std::string_view(name, name_size);
+    p += name_size;
+
+    auto v = Units::ToSysUnit(ParseDouble(p + 1, &p), Unit::KILOMETER_PER_HOUR);
+    setting.minV = v;
+    shape.flaps.emplace_back(std::move(setting));
+  }
+
   return true;
 }
 
@@ -123,10 +164,17 @@ FormatPolarShape(const PolarShape &shape, char *buffer, size_t max_size)
   v2 = Units::ToUserUnit(shape[1].v, Unit::KILOMETER_PER_HOUR);
   v3 = Units::ToUserUnit(shape[2].v, Unit::KILOMETER_PER_HOUR);
 
-  snprintf(buffer, max_size, "%.3f,%.3f,%.3f,%.3f,%.3f,%.3f",
+  int idx = snprintf(buffer, max_size, "%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%d",
            (double)v1, (double)shape[0].w,
            (double)v2, (double)shape[1].w,
-           (double)v3, (double)shape[2].w);
+           (double)v3, (double)shape[2].w,
+           (int)shape.flaps.size());
+
+  for (const auto& flapSetting : shape.flaps) {
+    double v = Units::ToUserUnit(flapSetting.minV, Unit::KILOMETER_PER_HOUR);
+    idx += snprintf(&buffer[idx], max_size -idx, ",%s,%.3f",
+        flapSetting.name.c_str(), v);
+  }
 }
 
 void

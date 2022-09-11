@@ -24,6 +24,10 @@ Copyright_License {
 #pragma once
 
 #include <tchar.h>
+#include <array>
+#include <tuple>
+
+#include "Polar/Flaps.hpp"
 
 struct PolarShape;
 struct PolarInfo;
@@ -66,6 +70,10 @@ namespace PolarStore
 
     /** empty rigged glider mass (kg), make the polar reference mass independent of the lift of weight sum */
     unsigned empty_mass;
+
+    unsigned num_flaps;
+
+    std::array<std::pair<const char*, double>, 8> flaps;
 
     PolarShape ToPolarShape() const;
     PolarInfo ToPolarInfo() const;

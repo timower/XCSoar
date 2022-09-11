@@ -96,6 +96,8 @@ DerivedInfo::Reset()
   airspace_warnings.Clear();
 
   planned_route.clear();
+
+  best_flap = 0;
 }
 
 void

@@ -172,6 +172,8 @@ namespace InfoBoxFactory
 
     e_HeartRate,
 
+    e_BestFlap,
+
     e_NUM_TYPES /* Last item */
   };
 

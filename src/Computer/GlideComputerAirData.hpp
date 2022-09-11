@@ -159,4 +159,7 @@ private:
    */
   void NextLegEqThermal(const NMEAInfo &basic, DerivedInfo &calculated,
                         const ComputerSettings &settings);
+
+  void BestFlap(const NMEAInfo& basic, DerivedInfo& calculated,
+                const ComputerSettings &settings);
 };

@@ -84,6 +84,7 @@ PlaneGlue::Synchronize(const Plane &plane, ComputerSettings &settings,
     return;
 
   gp.SetCoefficients(pc, false);
+  gp.SetFlapSpeeds(plane.polar_shape.flaps.GetSpeeds());
 
   // Glider empty weight
   gp.SetReferenceMass(plane.polar_shape.reference_mass, false);
