@@ -43,6 +43,7 @@ set(CMAKE_AR {toolchain.ar})
 set(CMAKE_RANLIB {toolchain.ranlib})
 """)
 
+    install_prefix = toolchain.install_prefix.replace('/private/tmp/', '/tmp/')
     if cmake_system_name == 'Darwin':
         # On macOS, cmake forcibly adds an "-isysroot" flag even if
         # one is already present in the flags variable; this breaks
@@ -54,11 +55,17 @@ set(CMAKE_RANLIB {toolchain.ranlib})
             sysroot = m.group(1)
 
             print(f'set(CMAKE_OSX_SYSROOT {sysroot})', file=f)
-
-            # search libraries and headers only in the sysroot, not on
-            # the build host
             f.write(f"""
-set(CMAKE_FIND_ROOT_PATH "{toolchain.install_prefix};{sysroot}")
+set(CMAKE_FIND_ROOT_PATH "{install_prefix};{sysroot}")
+""")
+    else:
+        f.write(f"""
+set(CMAKE_FIND_ROOT_PATH "{install_prefix}")
+""")
+
+    # search libraries and headers only in the sysroot, not on
+    # the build host
+    f.write(f"""
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
