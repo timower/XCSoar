@@ -53,6 +53,10 @@
           gles-armv7 = pkgs.pkgsCross.armv7l-hf-multiplatform.callPackage ./xcsoar.nix {
             useGLES = true;
           };
+
+          gles-aarch64 = pkgs.pkgsCross.aarch64-multiplatform.callPackage ./xcsoar.nix {
+            useGLES = true;
+          };
         }
       );
     };
