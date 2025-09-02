@@ -39,6 +39,8 @@
   pkg-config-unwrapped,
   libgbm,
 
+  apple-sdk,
+
   buildPackages,
   pkgsBuildBuild,
   androidenv,
@@ -154,20 +156,23 @@ stdenv.mkDerivation {
   buildInputs =
     lib.optionals (!android) [
       lua54Packages.lua
-      dbus.dev
-      alsa-lib
       freetype
       libpng
-      libinput
       libjpeg
-      glm
       libsodium
       c-ares
+      curl
+      fmt
+
+      libGL
+      glm
+    ]
+    ++ lib.optionals (stdenv.hostPlatform.isLinux) [
+      libinput
+      alsa-lib
+      dbus.dev
       libdrm
       mesa
-      curl
-      libGL
-      fmt
     ]
     ++ lib.optionals useSDL [ SDL2 ]
     ++ lib.optionals useGLES [ libgbm ];
@@ -176,6 +181,10 @@ stdenv.mkDerivation {
     "WERROR=n" # Supress deprecated declaration errors..
     "DEBUG=${toMakeFlag debug}"
     "TESTING=${toMakeFlag testing}"
+
+    # Fixes darwin builds (gcc doesn't exist) and cross builds.
+    "HOSTCC=${pkgsBuildBuild.stdenv.cc}/bin/cc"
+    "HOSTCXX=${pkgsBuildBuild.stdenv.cc}/bin/c++"
   ]
   ++ lib.optionals useGLES [
     "ENABLE_MESA_KMS=y"
@@ -191,11 +200,14 @@ stdenv.mkDerivation {
     "ANDROID_SDK=${androidSdkDir}"
     "ANDROID_NDK=${androidNdkDir}"
   ]
-  ++ lib.optionals (stdenv.buildPlatform != stdenv.hostPlatform) [
+  ++ lib.optionals (!android) [
     "CC=${stdenv.cc.targetPrefix}cc"
     "CXX=${stdenv.cc.targetPrefix}c++"
-    "HOSTCC=${pkgsBuildBuild.stdenv.cc}/bin/cc"
-    "HOSTCXX=${pkgsBuildBuild.stdenv.cc}/bin/c++"
+  ]
+  ++ lib.optionals (!android && stdenv.hostPlatform.isDarwin) [
+    "TARGET=${if stdenv.hostPlatform.isAarch then "MACOS" else "OSX64"}"
+    "HOST_TRIPLET=${stdenv.hostPlatform.config}"
+    "DARWIN_SDK=${apple-sdk.sdkroot}"
   ];
 
   postPatch = ''
@@ -221,6 +233,9 @@ stdenv.mkDerivation {
     # Allow the PKG_CONFIG variable to be set in the environment.
     substituteInPlace ./build/pkgconfig.mk \
        --replace-fail "PKG_CONFIG = pkg-config" "PKG_CONFIG ?= pkg-config"
+
+    substituteInPlace ./build/python/build/autotools.py \
+       --replace-fail "glibtoolize" "libtoolize"
   '';
 
   configurePhase = ''
