@@ -114,6 +114,36 @@ struct mxcfb_rect {
 #define FB_POWERDOWN_DISABLE			-1
 #define FB_TEMP_AUTO_UPDATE_DISABLE     -1
 
+#ifdef REMARKABLE
+
+/* The reMarkable kernels carry a newer revision of this ABI than the one
+   below: alt_buffer_data lost its virt_addr pointer, and update_data gained
+   dither_mode/quant_bit. That changes sizeof(struct mxcfb_update_data), and
+   with it the size _IOW() encodes into MXCFB_SEND_UPDATE, so a request built
+   from the layout below is rejected outright by anything expecting this one
+   (rm2fb logs it as an unhandled ioctl). */
+
+struct mxcfb_alt_buffer_data {
+	__u32 phys_addr;
+	__u32 width;	/* width of entire buffer */
+	__u32 height;	/* height of entire buffer */
+	struct mxcfb_rect alt_update_region;	/* region within buffer to update */
+};
+
+struct mxcfb_update_data {
+	struct mxcfb_rect update_region;
+	__u32 waveform_mode;
+	__u32 update_mode;
+	__u32 update_marker;
+	int temp;
+	unsigned int flags;
+	int dither_mode;
+	int quant_bit;
+	struct mxcfb_alt_buffer_data alt_buffer_data;
+};
+
+#else
+
 struct mxcfb_alt_buffer_data {
 	void *virt_addr;
 	__u32 phys_addr;
@@ -131,6 +161,8 @@ struct mxcfb_update_data {
 	int flags;
 	struct mxcfb_alt_buffer_data alt_buffer_data;
 };
+
+#endif
 
 /*
  * Structure used to define waveform modes for driver

@@ -309,6 +309,8 @@ TopCanvas::Flip()
     epd_update_marker,
     TEMP_USE_AMBIENT,
     0,
+    0,
+    0,
   };
 
   ioctl(fd, MXCFB_SEND_UPDATE, &epd_update_data);
