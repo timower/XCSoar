@@ -172,9 +172,17 @@ stdenv.mkDerivation {
       glm
     ]
     ++ lib.optionals (stdenv.hostPlatform.isLinux) [
-      libinput
+      # LibInputHandler only handles pointer/touch/keyboard events, never
+      # tablet tools, so libwacom's (python-heavy) device database is dead
+      # weight - worth dropping on a target that ships to a tablet.
+      (if remarkable then libinput.override { wacomSupport = false; } else libinput)
       alsa-lib
       dbus.dev
+    ]
+    # KMS/GBM dependencies of the EGL targets. The framebuffer target draws
+    # through /dev/fb0 and never touches them, and mesa pulls a whole LLVM
+    # build into a cross closure, so keep them off that one.
+    ++ lib.optionals (stdenv.hostPlatform.isLinux && !remarkable) [
       libdrm
       mesa
     ]
