@@ -98,6 +98,62 @@ GetInfo() noexcept
 
 #endif
 
+#ifdef REMARKABLE
+
+#include "system/FileUtil.hpp"
+
+#include <stdio.h>
+#include <stdlib.h>
+
+namespace Power {
+
+/* the fuel gauge differs per generation, and isn't worth a model lookup
+   of its own - whichever one exists is the right one */
+static constexpr const char *battery_dirs[] = {
+  "/sys/class/power_supply/max77818_battery",
+  "/sys/class/power_supply/max1726x_battery",
+  "/sys/class/power_supply/bq27441-0",
+};
+
+static bool
+ReadBatteryFile(const char *dir, const char *name,
+                char *buffer, size_t size) noexcept
+{
+  char path[128];
+  snprintf(path, sizeof(path), "%s/%s", dir, name);
+  return File::ReadString(Path(path), buffer, size);
+}
+
+Info
+GetInfo() noexcept
+{
+  Info info;
+  auto &battery = info.battery;
+  auto &external = info.external;
+
+  char line[256];
+
+  for (const char *dir : battery_dirs) {
+    if (!ReadBatteryFile(dir, "capacity", line, sizeof(line)))
+      continue;
+
+    battery.remaining_percent = atoi(line);
+
+    if (ReadBatteryFile(dir, "status", line, sizeof(line)))
+      external.status = StringIsEqual(line, "Discharging\n")
+        ? Power::ExternalInfo::Status::OFF
+        : Power::ExternalInfo::Status::ON;
+
+    break;
+  }
+
+  return info;
+}
+
+} // namespace Power
+
+#endif
+
 #ifdef ENABLE_SDL
 
 #include <SDL_power.h>

@@ -49,7 +49,7 @@ class Canvas;
 struct PixelSize;
 namespace UI { class Display; }
 
-#if defined(USE_FB) && !defined(KOBO)
+#if defined(USE_FB) && !defined(KOBO) && !defined(REMARKABLE)
 /* defined if we need to initialise /dev/tty to graphics mode, see
    TopCanvas::InitialiseTTY() */
 #define USE_TTY

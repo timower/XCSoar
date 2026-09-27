@@ -50,6 +50,17 @@
             useGLES = true;
           };
 
+          # reMarkable Paper Pro Move (and other reMarkable generations):
+          # framebuffer/e-paper build, run under rm2fb.
+          remarkable = pkgs.pkgsCross.aarch64-multiplatform.callPackage ./xcsoar.nix {
+            remarkable = true;
+          };
+
+          # Same build for the host, to test/compile the target natively.
+          remarkable-host = mkXCsoar {
+            remarkable = true;
+          };
+
           gles-armv7 = pkgs.pkgsCross.armv7l-hf-multiplatform.callPackage ./xcsoar.nix {
             useGLES = true;
           };

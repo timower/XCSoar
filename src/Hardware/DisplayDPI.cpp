@@ -10,6 +10,10 @@
 #include "Kobo/Model.hpp"
 #endif
 
+#ifdef REMARKABLE
+#include "Remarkable/Model.hpp"
+#endif
+
 #ifdef __APPLE__
 #include <TargetConditionals.h>
 #if TARGET_OS_IPHONE
@@ -41,13 +45,28 @@ MMToDPI(unsigned pixels, unsigned mm)
 #endif
 
 #if !defined(_WIN32) && !defined(USE_X11) && !defined(MESA_KMS)
-#ifndef __APPLE__
+#if !defined(__APPLE__) && !defined(REMARKABLE)
 [[gnu::const]]
 #endif
 static unsigned
 GetDPI()
 {
-#ifdef KOBO
+#ifdef REMARKABLE
+  switch (DetectRemarkableModel()) {
+  case RemarkableModel::PAPER_PRO_MOVE:
+    return 264;
+
+  case RemarkableModel::PAPER_PRO:
+    return 229;
+
+  case RemarkableModel::PAPER_PURE:
+    return 227;
+
+  default:
+    /* reMarkable 1 and 2 */
+    return 226;
+  }
+#elif defined(KOBO)
   switch (DetectKoboModel()) {
   case KoboModel::GLO_HD:
   case KoboModel::CLARA_HD:

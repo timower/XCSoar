@@ -3,6 +3,7 @@
 
 #pragma once
 
-#if defined(ANDROID) || defined(KOBO) || defined(ENABLE_SDL)
+#if defined(ANDROID) || defined(KOBO) || defined(REMARKABLE) || \
+  defined(ENABLE_SDL)
 #define HAVE_BATTERY
 #endif

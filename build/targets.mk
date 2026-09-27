@@ -2,7 +2,7 @@ TARGETS = PC WIN64 \
 	UNIX UNIX32 UNIX64 OPT \
 	WAYLAND \
 	FUZZER \
-	PI PI2 CUBIE KOBO NEON \
+	PI PI2 CUBIE KOBO REMARKABLE NEON \
 	ANDROID ANDROID7 ANDROID86 \
 	ANDROIDAARCH64 ANDROIDX64 \
 	ANDROIDFAT \
@@ -50,6 +50,7 @@ TARGET_IS_PI := n
 TARGET_IS_PI32 := n
 TARGET_IS_PI64 := n
 TARGET_IS_KOBO := n
+TARGET_IS_REMARKABLE := n
 TARGET_IS_CUBIE := n
 HAVE_POSIX := n
 HAVE_WIN32 := y
@@ -214,6 +215,16 @@ ifeq ($(TARGET),KOBO)
   TARGET_IS_KOBO = y
 
   HOST_TRIPLET = armv7a-kobo-linux-musleabihf
+endif
+
+ifeq ($(TARGET),REMARKABLE)
+  # reMarkable e-paper tablets, running under the rm2fb framebuffer
+  # multiplexer (https://github.com/timower/rM2-stuff).  Unlike KOBO, this
+  # is a regular dynamically linked glibc build (rm2fb's /dev/fb0 shim is
+  # an LD_PRELOAD library), and the compiler is left to the caller so the
+  # same target works for every reMarkable generation.
+  override TARGET = UNIX
+  TARGET_IS_REMARKABLE = y
 endif
 
 ifeq ($(TARGET),NEON)
@@ -483,6 +494,10 @@ ifeq ($(HOST_IS_ARM)$(TARGET_IS_CUBIE),ny)
   # cross-crompiling for Cubieboard
   TARGET_CPPFLAGS += --sysroot=$(CUBIE) -isystem $(CUBIE)/usr/include/arm-linux-gnueabihf
   TARGET_CPPFLAGS += -isystem $(CUBIE)/usr/local/stow/sunxi-mali/include
+endif
+
+ifeq ($(TARGET_IS_REMARKABLE),y)
+  TARGET_CPPFLAGS += -DREMARKABLE
 endif
 
 ifeq ($(TARGET_IS_KOBO),y)

@@ -45,9 +45,13 @@
   pkgsBuildBuild,
   androidenv,
 
+  systemdLibs,
+
   useSDL ? false,
   android ? false,
   useGLES ? false,
+  # reMarkable e-paper tablets, drawing through rm2fb's /dev/fb0 shim.
+  remarkable ? false,
   debug ? false,
   testing ? false,
 }:
@@ -175,7 +179,10 @@ stdenv.mkDerivation {
       mesa
     ]
     ++ lib.optionals useSDL [ SDL2 ]
-    ++ lib.optionals useGLES [ libgbm ];
+    ++ lib.optionals useGLES [ libgbm ]
+    # libinput's udev backend is what the framebuffer target reads input
+    # through, see build/libevent_options.mk.
+    ++ lib.optionals remarkable [ systemdLibs ];
 
   makeFlags = [
     "WERROR=n" # Supress deprecated declaration errors..
@@ -193,6 +200,10 @@ stdenv.mkDerivation {
   ]
   ++ lib.optionals useSDL [
     "ENABLE_SDL=y"
+    "GEOTIFF=n"
+  ]
+  ++ lib.optionals remarkable [
+    "TARGET=REMARKABLE"
     "GEOTIFF=n"
   ]
   ++ lib.optionals android [

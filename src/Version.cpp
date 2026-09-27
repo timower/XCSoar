@@ -13,6 +13,8 @@
   #define TARGET "Android"
 #elif defined(KOBO)
   #define TARGET "Kobo"
+#elif defined(REMARKABLE)
+  #define TARGET "reMarkable"
 #elif defined(__linux__)
   #define TARGET "Linux"
 #elif defined(__APPLE__)

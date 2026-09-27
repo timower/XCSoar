@@ -23,6 +23,11 @@ OS_SOURCES += \
 	$(SRC)/Kobo/Model.cpp
 endif
 
+ifeq ($(TARGET_IS_REMARKABLE),y)
+OS_SOURCES += \
+	$(SRC)/Remarkable/Model.cpp
+endif
+
 OS_DEPENDS = UTIL
 
 $(eval $(call link-library,libos,OS))
