@@ -248,7 +248,6 @@ TopCanvas::Flip()
 #ifdef USE_FB
 
 #ifdef REMARKABLE
-  /* Copies itself, diffing against the framebuffer as it goes. */
   epaper.Flip(fd, map, map_pitch, map_bpp, buffer);
 #elif defined(GREYSCALE)
   CopyFromGreyscale(
