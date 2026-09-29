@@ -1,7 +1,7 @@
 {
   description = "XCSoar glide computer";
 
-  inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
   inputs.self.submodules = true;
 
   outputs =
