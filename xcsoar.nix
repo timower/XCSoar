@@ -172,7 +172,8 @@ stdenv.mkDerivation {
       glm
     ]
     ++ lib.optionals (stdenv.hostPlatform.isLinux) [
-      libinput
+      # XCSoar never handles tablet tools; libwacom drags python3 into the closure.
+      (if remarkable then libinput.override { wacomSupport = false; } else libinput)
       alsa-lib
       dbus.dev
     ]
