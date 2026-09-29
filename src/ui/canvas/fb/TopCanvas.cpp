@@ -17,7 +17,7 @@
 #include "Kobo/Model.hpp"
 #endif
 
-#if (defined(KOBO) || defined(REMARKABLE)) && defined(USE_FB)
+#if defined(KOBO) && defined(USE_FB)
 #include "mxcfb.h"
 #endif
 
@@ -247,7 +247,10 @@ TopCanvas::Flip()
 {
 #ifdef USE_FB
 
-#ifdef GREYSCALE
+#ifdef REMARKABLE
+  /* Copies itself, diffing against the framebuffer as it goes. */
+  epaper.Flip(fd, map, map_pitch, map_bpp, buffer);
+#elif defined(GREYSCALE)
   CopyFromGreyscale(
 #ifdef DITHER
                     dither,
@@ -289,28 +292,6 @@ TopCanvas::Flip()
     epd_update_marker,
     TEMP_USE_AMBIENT,
     enable_dither ? EPDC_FLAG_FORCE_MONOCHROME : 0,
-  };
-
-  ioctl(fd, MXCFB_SEND_UPDATE, &epd_update_data);
-#endif
-
-#ifdef REMARKABLE
-  /* rm2fb only forwards the shared framebuffer to the panel when it sees
-     an update ioctl; PARTIAL keeps it from blocking on each frame */
-  epd_update_marker++;
-
-  struct mxcfb_update_data epd_update_data = {
-    {
-      0, 0, buffer.size.width, buffer.size.height
-    },
-
-    WAVEFORM_MODE_AUTO,
-    UPDATE_MODE_PARTIAL,
-    epd_update_marker,
-    TEMP_USE_AMBIENT,
-    0,
-    0,
-    0,
   };
 
   ioctl(fd, MXCFB_SEND_UPDATE, &epd_update_data);

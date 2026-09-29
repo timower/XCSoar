@@ -197,6 +197,9 @@ SCREEN_SOURCES += \
 	$(CANVAS_SRC_DIR)/fb/TopCanvas.cpp \
 	$(WINDOW_SRC_DIR)/fb/Window.cpp \
 	$(WINDOW_SRC_DIR)/fb/SingleWindow.cpp
+ifeq ($(TARGET_IS_REMARKABLE),y)
+SCREEN_SOURCES += $(CANVAS_SRC_DIR)/fb/EPaper.cpp
+endif
 FB_CPPFLAGS = -DUSE_FB
 else ifeq ($(HAVE_WIN32),y)
 SCREEN_SOURCES += \

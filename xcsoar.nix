@@ -172,10 +172,7 @@ stdenv.mkDerivation {
       glm
     ]
     ++ lib.optionals (stdenv.hostPlatform.isLinux) [
-      # LibInputHandler only handles pointer/touch/keyboard events, never
-      # tablet tools, so libwacom's (python-heavy) device database is dead
-      # weight - worth dropping on a target that ships to a tablet.
-      (if remarkable then libinput.override { wacomSupport = false; } else libinput)
+      libinput
       alsa-lib
       dbus.dev
     ]

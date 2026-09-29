@@ -49,6 +49,10 @@ class Canvas;
 struct PixelSize;
 namespace UI { class Display; }
 
+#ifdef REMARKABLE
+#include "ui/canvas/fb/EPaper.hpp"
+#endif
+
 #if defined(USE_FB) && !defined(KOBO) && !defined(REMARKABLE)
 /* defined if we need to initialise /dev/tty to graphics mode, see
    TopCanvas::InitialiseTTY() */
@@ -114,6 +118,10 @@ class TopCanvas
 
   uint32_t epd_update_marker;
 #endif // USE_FB
+
+#ifdef REMARKABLE
+  EPaperPanel epaper;
+#endif
 
 #ifdef KOBO
   /**
